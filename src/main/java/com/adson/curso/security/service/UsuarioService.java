@@ -95,6 +95,7 @@ public class UsuarioService implements UserDetailsService {
 	public Usuario buscarPorIdEPerfis(Long usuarioId, Long[] perfisId) {
 		
 		
-		return repository.findByAndPerfis(usuarioId, perfisId);
+		return repository.findByAndPerfis(usuarioId, perfisId)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário Inexistente!"));
 	}
 }
