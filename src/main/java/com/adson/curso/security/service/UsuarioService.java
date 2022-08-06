@@ -84,4 +84,10 @@ public class UsuarioService implements UserDetailsService {
 		repository.save(usuario);
 		
 	}
+
+	@Transactional(readOnly = true)
+	public Usuario buscarPorId(Long id) {
+		
+		return repository.findById(id).get();
+	}
 }
