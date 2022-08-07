@@ -23,6 +23,8 @@ import com.adson.curso.security.domain.Usuario;
 import com.adson.curso.security.service.MedicoService;
 import com.adson.curso.security.service.UsuarioService;
 
+import javassist.expr.NewArray;
+
 @Controller
 @RequestMapping("u")
 public class UsuarioController {
@@ -106,8 +108,10 @@ public class UsuarioController {
 			else if (us.getPerfis().contains(new Perfil(PerfilTipo.MEDICO.getCod()))) {
 				
 				Medico medico = medicoservice.buscarPOrUsuarioId(usuarioId);
-				
-				return new ModelAndView("especialidade/especialidade");
+				return medico.hasNotId()
+						? new ModelAndView("medico/cadastro", "medico", new Medico(new Usuario(usuarioId)))
+						: new ModelAndView("medico/cadastro", "medico", medico);
+						
 				
 			}
 			else if (us.getPerfis().contains(new Perfil(PerfilTipo.PACIENTE.getCod()))) {
