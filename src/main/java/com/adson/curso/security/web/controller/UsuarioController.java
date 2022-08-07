@@ -23,8 +23,6 @@ import com.adson.curso.security.domain.Usuario;
 import com.adson.curso.security.service.MedicoService;
 import com.adson.curso.security.service.UsuarioService;
 
-import javassist.expr.NewArray;
-
 @Controller
 @RequestMapping("u")
 public class UsuarioController {
