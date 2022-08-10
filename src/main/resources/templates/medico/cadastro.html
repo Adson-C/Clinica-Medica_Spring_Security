@@ -25,8 +25,15 @@
 					<div class="col-md-8">
 					
 						<div th:replace="fragments/alert  :: alerta-sucesso"></div>
-						
-						<form th:action="${medico.id == null} ? @{/medicos/salvar} : @{/medicos/editar}"
+
+
+							<div class="add-toast position-absolute" aria-live="polite"
+								aria-atomic="true" style="top: 0px; right: 20px;">
+								<!--toast add para autocomplte jQuery-->
+							</div>
+
+
+							<form th:action="${medico.id == null} ? @{/medicos/salvar} : @{/medicos/editar}"
 							  th:object="${medico}"	method="POST" class="was-validated">
 							<div class="form-row">
 								<div class="form-group col-md-6">
