@@ -98,4 +98,17 @@ public class UsuarioService implements UserDetailsService {
 		return repository.findByAndPerfis(usuarioId, perfisId)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário Inexistente!"));
 	}
+
+	public static boolean isSenhaCorreta(String senhaDigitada, String senhaAmazenada) {
+		
+		return new BCryptPasswordEncoder().matches(senhaDigitada, senhaAmazenada);
+	}
+
+	@Transactional(readOnly = false)
+	public void alterarSenha(Usuario usuario, String senha) {
+
+		usuario.setSenha(new BCryptPasswordEncoder().encode(senha));
+		repository.save(usuario);
+		
+	}
 }
