@@ -54,3 +54,23 @@ $('#especialidade').on('blur', function() {
 		});
 	}
 });	
+
+
+/** 
+ * busca os horários livres para consulta conforme a data e o médico.
+ * os horários são adicionados a página como um select:option.	
+*/
+$('#data').on('blur', function () {
+	$("#horarios").empty();
+    var data = $(this).val();
+    var medico = $('input[name="medico.id"]:checked').val();
+    if (Date.parse(data)) {
+    	$.get('/agendamentos/horario/medico/'+ medico + '/data/' + data , function( result ) {
+    		$.each(result, function (k, v) {
+    			$("#horarios").append( 
+    				'<option class="op" value="'+ v.id +'">'+ v.horaMinuto + '</option>'
+    			);	            			
+    	    });
+    	});
+    }
+});

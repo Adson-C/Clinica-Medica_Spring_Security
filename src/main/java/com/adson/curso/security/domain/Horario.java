@@ -2,7 +2,10 @@ package com.adson.curso.security.domain;
 
 import java.time.LocalTime;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 @SuppressWarnings("serial")
 @Entity
