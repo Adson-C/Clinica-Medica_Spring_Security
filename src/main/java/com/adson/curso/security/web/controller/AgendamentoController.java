@@ -2,11 +2,14 @@ package com.adson.curso.security.web.controller;
 
 import java.time.LocalDate;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.adson.curso.security.domain.Agendamento;
 import com.adson.curso.security.domain.Especialidade;
 import com.adson.curso.security.domain.Paciente;
+import com.adson.curso.security.domain.PerfilTipo;
 import com.adson.curso.security.service.AgendamentoService;
 import com.adson.curso.security.service.EspecialidadeService;
 import com.adson.curso.security.service.PacienteService;
@@ -66,6 +70,28 @@ public class AgendamentoController {
 		
 		return "redirect:/agendamentos/agendar";
 
+	}
+	
+	// abrir paginas de historico de agendamento do paciente)
+	@GetMapping({ "/historico/paciente", "/historico/consultas" })
+	public String historico() {
+
+		return "agendamento/historico-paciente";
+	}
+
+	// localizar o historico de agendamentos por usuario logado
+	@GetMapping({"/datatables/server/historico" })
+	public ResponseEntity<?> historicoAgendamentosPorPaciente(HttpServletRequest request, @AuthenticationPrincipal User user) {
+
+		if (user.getAuthorities().contains(new SimpleGrantedAuthority(PerfilTipo.PACIENTE.getDesc()))) {
+			ResponseEntity.ok(service.buscarHistoricoPorPacienteEmail(user.getUsername(), request));
+		}
+		
+		if (user.getAuthorities().contains(new SimpleGrantedAuthority(PerfilTipo.MEDICO.getDesc()))) {
+			ResponseEntity.ok(service.buscarHistoricoPorMedicoEmail(user.getUsername(), request));
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 
 }
