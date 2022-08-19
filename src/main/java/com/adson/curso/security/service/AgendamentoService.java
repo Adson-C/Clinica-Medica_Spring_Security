@@ -15,6 +15,7 @@ import com.adson.curso.security.datatables.Datatables;
 import com.adson.curso.security.datatables.DatatablesColunas;
 import com.adson.curso.security.domain.Agendamento;
 import com.adson.curso.security.domain.Horario;
+import com.adson.curso.security.execption.AcessoNegadoExecption;
 import com.adson.curso.security.repository.AgendamentoRepository;
 import com.adson.curso.security.repository.projection.HistoricoPaciente;
 
@@ -65,15 +66,21 @@ public class AgendamentoService {
 	}
 
 	@Transactional(readOnly = false)
-	public void editar(Agendamento agendamento, String username) {
+	public void editar(Agendamento agendamento, String email) {
 		
-		Agendamento ag = buscarPorId(agendamento.getId());
+		Agendamento ag = buscarPorIdEUsuario(agendamento.getId(), email);
 		ag.setDataConsulta(agendamento.getDataConsulta());
 		ag.setEspecialidade(agendamento.getEspecialidade());
 		ag.setHorario(agendamento.getHorario());
 		ag.setMedico(agendamento.getMedico());
 		
 		
+	}
+
+	@Transactional(readOnly = true)
+	public Agendamento buscarPorIdEUsuario(Long id, String email) {
+		return repository.findByIdAndPacienteOrMedicoEmail(id, email)
+				.orElseThrow(() -> new AcessoNegadoExecption("Acesso Negado ao usuario: " + email));
 	}
 
 	
