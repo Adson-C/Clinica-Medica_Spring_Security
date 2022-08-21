@@ -3,6 +3,7 @@ package com.adson.curso.security.web.controller;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +173,7 @@ public class UsuarioController {
 
 	// recebe o from da pagína cadastrar-se
 	@PostMapping("/cadastro/paciente/salvar")
-	public String salvarCadastroPaciente(Usuario usuario, BindingResult result) {
+	public String salvarCadastroPaciente(Usuario usuario, BindingResult result) throws MessagingException {
 		try {
 			service.salvarCadastroPaciente(usuario);
 			
@@ -183,5 +184,18 @@ public class UsuarioController {
 		return "redirect:/u/cadastro/realizado";
 		
 	}
+	
+
+    // recebe a requisicao de confirmacao de cadastro
+    @GetMapping("/confirmacao/cadastro")
+    public String respostaConfirmacaoCadastroPaciente(@RequestParam("codigo") String codigo, 
+    												  RedirectAttributes attr) {    	
+        service.ativarCadastroPaciente(codigo);
+        attr.addFlashAttribute("alerta", "sucesso");
+        attr.addFlashAttribute("titulo", "Cadastro Ativado!");
+        attr.addFlashAttribute("texto", "Parabéns, seu cadastro está ativo.");
+        attr.addFlashAttribute("subtexto", "Singa com seu login/senha");
+    	return "redirect:/login";
+    } 
 	
 }
