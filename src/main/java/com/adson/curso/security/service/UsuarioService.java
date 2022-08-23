@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -50,7 +51,7 @@ public class UsuarioService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
 		Usuario usuario = buscarPorEmailAtivo(username)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuario" + username + ""));
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario" + username + " não encontrado."));
 		
 		return new User(
 				usuario.getEmail(),
@@ -153,5 +154,18 @@ public class UsuarioService implements UserDetailsService {
 		}
 		usuario.setAtivo(true);
 	}
+
+	@Transactional(readOnly = false)
+	public void pedidoRedefinirSenha(String email) throws MessagingException {
+		Usuario usuario = buscarPorEmailAtivo(email)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuario" + email + " não encontrado."));
+		
+		String verificador = RandomStringUtils.randomAlphanumeric(6);
+		
+		usuario.setCodigoVerificador(verificador);
+		
+		emailService.enviarPedidoRedefinicaoSenha(email, verificador);
+	}
+
 	
 }

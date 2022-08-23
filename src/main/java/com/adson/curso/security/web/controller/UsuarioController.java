@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -194,8 +195,51 @@ public class UsuarioController {
         attr.addFlashAttribute("alerta", "sucesso");
         attr.addFlashAttribute("titulo", "Cadastro Ativado!");
         attr.addFlashAttribute("texto", "Parabéns, seu cadastro está ativo.");
-        attr.addFlashAttribute("subtexto", "Singa com seu login/senha");
+        attr.addFlashAttribute("subtexto", "Siga com seu login/senha");
     	return "redirect:/login";
     } 
+    
+    //abre a pagina de pedido de redefinir de senha
+    @GetMapping("/p/redefinir/senha")
+    public String pedidoRedefinirSenha() {
+    	
+    	return "usuario/pedido-recuperar-senha";
+    	
+    }
+    
+    // form de pedido de recuparar senha
+	@GetMapping("/p/recuperar/senha")
+	public String redefinirSenha(String email, ModelMap model) throws MessagingException {
+		service.pedidoRedefinirSenha(email);
+		
+		model.addAttribute("sucesso", "Em instante você receberar um E-mail para "
+				+ "proseguir com a redefinição da sua senha. ");
+		model.addAttribute("usuario", new Usuario(email));
+		
+		return "usuario/recuperar-senha";
+	}
+    
+    // salvar a nova senha via recuperação senha
+	@PostMapping("/p/nova/senha")
+	public String confirmacaoDeRedefinicaoDeSenha(Usuario usuario, ModelMap model) {
+	
+		Usuario u = service.buscarPorEmail(usuario.getEmail());
+		if (!usuario.getCodigoVerificador().equals(u.getCodigoVerificador())) {
+			model.addAttribute("falha", "Código verificador não confere.");
+			
+			return "usuario/recuperar-senha";
+		}
+		u.setCodigoVerificador(null);
+		service.alterarSenha(u, usuario.getSenha());
+		model.addAttribute("alerta", "sucesso");
+		model.addAttribute("titulo", "Senha Redefinida!");
+		model.addAttribute("texto", "Você já pode logar no sistema.");
+		
+		return "login";
+		
+	}
+	
+	
+	
 	
 }
