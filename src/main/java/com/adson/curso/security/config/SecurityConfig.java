@@ -65,7 +65,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
                 // msg de erro personalizada acesso negado
                 .and()
                 .exceptionHandling()
-                .accessDeniedPage("/acesso-negado"); 
+                .accessDeniedPage("/acesso-negado")
+                .and()
+                .rememberMe(); 
 
     }
 
