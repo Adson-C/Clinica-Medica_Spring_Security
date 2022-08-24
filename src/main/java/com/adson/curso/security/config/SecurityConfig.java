@@ -1,12 +1,17 @@
 package com.adson.curso.security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.adson.curso.security.domain.PerfilTipo;
 import com.adson.curso.security.service.UsuarioService;
@@ -62,12 +67,18 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
                 .and()
                      .logout()
                 .logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID")
                 // msg de erro personalizada acesso negado
                 .and()
                 .exceptionHandling()
                 .accessDeniedPage("/acesso-negado")
                 .and()
                 .rememberMe(); 
+        
+        http.sessionManagement()
+        	.maximumSessions(1)
+        	.maxSessionsPreventsLogin(true)
+        	.sessionRegistry(sessionRegistry());
 
     }
 
@@ -77,5 +88,17 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(service).passwordEncoder(new BCryptPasswordEncoder());
 	}
     
+    @Bean
+	public SessionRegistry sessionRegistry() {
+		
+		return new SessionRegistryImpl();
+		
+	}
     
+    @Bean
+    public ServletListenerRegistrationBean<?> servletListenerRegistrationBean() {
+    	
+    	return new ServletListenerRegistrationBean<>( new HttpSessionEventPublisher() );
+    }
+	
 }
