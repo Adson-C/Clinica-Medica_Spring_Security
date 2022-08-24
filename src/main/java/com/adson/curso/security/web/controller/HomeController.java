@@ -47,6 +47,18 @@ public class HomeController {
 		
 	}
 	
+	// Sessão expirada
+	@GetMapping({"/expired"})
+	public String sessaoExpirada(ModelMap model) {
+		
+		model.addAttribute("alerta", "erro");
+		model.addAttribute("titulo", "Acesso recusado!");
+		model.addAttribute("texto", "Sua sessão expirou.");
+		model.addAttribute("subtexto", "Você esta logado em outro dispositivo.");
+		return "login";
+		
+	}
+	
 	// acesso Negado 
 		@GetMapping({"/acesso-negado"})
 		public String acessoNegado(ModelMap model, HttpServletResponse resp) {
